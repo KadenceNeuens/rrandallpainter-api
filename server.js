@@ -3,7 +3,7 @@ const app = express()
 const port = 3080
 const cors = require('cors')
 
-app.use(cors())
+app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
 
 require('dotenv').config()
 const { Console } = require('console')
@@ -42,12 +42,20 @@ app.use(session(sess))
 
 //-------------------------------------
 // On all req
-
+app.use('/', (req, res, next) => {
+  if (req.session.type === 'admin')
+  {
+    res.end('Welcome back, Big Chungus!')
+  }
+  console.log(req.headers.cookie)
+  console.log(req.protocol)
+  console.log(req.session.type)
+  next()
+})
 
 //-------------------------------------
 // POST - Login
-app.post('/login', (req, res, next) => {
-  console.log(req.session.type)
+app.use('/login', (req, res, next) => {
   if (req.session.type === 'admin')
   {
     res.end('Welcome back, Big Chungus!')
@@ -67,7 +75,6 @@ app.post('/login', (req, res, next) => {
       res.json({auth: true})
     }
   }
-  console.log("Success!")
   next()
 })
 
