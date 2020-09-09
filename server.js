@@ -1,6 +1,10 @@
 const express = require('express')
 const app = express()
 const port = 3080
+const cors = require('cors')
+
+app.use(cors())
+
 require('dotenv').config()
 const { Console } = require('console')
 const cloudinary = require('cloudinary')
