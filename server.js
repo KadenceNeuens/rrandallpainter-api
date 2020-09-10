@@ -1,20 +1,20 @@
 const express = require('express')
 const app = express()
 const port = 3080
-const cors = require('cors')
+const bodyParser = require('body-parser')
+app.use(bodyParser.json()) // for parsing application/json
 
+const cors = require('cors')
 app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
 
 require('dotenv').config()
 const { Console } = require('console')
-const cloudinary = require('cloudinary')
+const fetch = require('node-fetch')
 
-cloudinary.config({ 
-    cloud_name: process.env.CLOUD_NAME, 
-    api_key: process.env.API_KEY, 
-    api_secret: process.env.API_SECRET 
-  });
+// My Cloudinary Middleware
+const cloud = require('./cloudinary_responses/cloud')
 
+// Authentication & Sessions
 const auth = require('basic-auth')
 const compare = require('tsscmp')
 const session = require('express-session')
@@ -47,9 +47,6 @@ app.use('/', (req, res, next) => {
   {
     res.end('Welcome back, Big Chungus!')
   }
-  console.log(req.headers.cookie)
-  console.log(req.protocol)
-  console.log(req.session.type)
   next()
 })
 
@@ -85,54 +82,15 @@ function check (name, pass) {
   // Simple method to prevent short-circut and use timing-safe compare
   valid = compare(name, process.env.ADMIN_USERNAME) && valid
   valid = compare(pass, process.env.ADMIN_PASSWORD) && valid
- 
   return valid
 }
 
 //-------------------------------------
-// GET
+//  GET
+app.use('/', cloud)
 
-// All Images
-app.get('/images', (req, res) => {
-  if (req.session.type === 'admin')
-  {
-    console.log("Pulling all images")
-
-  }  
-  else
-  {
-    console.log("Access denied")
-  }
-})
-
-// Residential Images
-app.get('/images/residential', (req, res) => {
-  if (req.session.type === 'admin')
-  {
-    console.log("Pulling all residential images")
-    
-  }  
-  else
-  {
-    console.log("Access denied")
-  }
-})
-
-// Commercial Images
-app.get('/images/commercial', (req, res) => {
-  if (req.session.type === 'admin')
-  {
-    console.log("Pulling all commercial images")
-    
-  }  
-  else
-  {
-    console.log("Access denied")
-  }
-})
-
-// //-------------------------------------
-// // POST
+//-------------------------------------
+// POST
 app.post('/images', (req, res) => {
   res.send("")
 })
