@@ -1,5 +1,5 @@
 {
-  "name": "rrandallpainter-api",
+  "name": "ls",
   "version": "1.0.0",
   "description": "rrandallpainter-site REST api",
   "main": "server.js",
