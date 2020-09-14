@@ -1,0 +1,33 @@
+{
+  "name": "rrandallpainter-api",
+  "version": "1.0.0",
+  "description": "rrandallpainter-site REST api",
+  "main": "server.js",
+  "dependencies": {
+    "basic-auth": "^2.0.1",
+    "cloudinary": "^1.23.0",
+    "connect-mongo": "^3.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "multer": "^1.4.2",
+    "node-fetch": "^2.6.1",
+    "tsscmp": "^1.0.6"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KadenceNeuens/rrandallpainter-api.git"
+  },
+  "author": "Kadence Neuens",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KadenceNeuens/rrandallpainter-api/issues"
+  },
+  "homepage": "https://github.com/KadenceNeuens/rrandallpainter-api#readme"
+}
