@@ -46,10 +46,20 @@ router.post('/images/residential', (req, res) => {
     .expression('resource_type:image AND tags=residential')
     .execute().then( result => {
         var urls = []
-        result.resources.map((item, index) => {
-            urls.push(cloudinary.image(item.filename+'.'+item.format, {transformation: [...data]}))
-            console.log(urls)
-        })
+        if (!req.body)
+        {
+            result.resources.map((item, index) => {
+                urls.push(cloudinary.image(item.filename+'.'+item.format, {transformation: [...data]}))
+                console.log(urls)
+            })
+        }
+        else
+        {
+            result.resources.map((item, index) => {
+                urls.push(cloudinary.image(item.filename+'.'+item.format))
+                console.log(urls)
+            })
+        }
         console.log(JSON.stringify(urls, null, 2))
         res.json(urls)
     });
@@ -71,7 +81,7 @@ router.post('/images/commercial', (req, res) => {
         if (!req.body)
         {
             result.resources.map((item, index) => {
-                urls.push(cloudinary.image(item.filename+'.'+item.format, {data}))
+                urls.push(cloudinary.image(item.filename+'.'+item.format, {transformation: [...data]}))
                 console.log(urls)
             })
         }
