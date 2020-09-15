@@ -25,43 +25,20 @@ const METADATA_URL =
   process.env.CLOUD_NAME +
   "/metadata_fields";
 
-//-------------------------------------
-// GET
-
-// All Images
-router.post("/images", (req, res) => {
-  var data = req.body;
-  cloudinary.v2.search
-    .expression("resource_type:image")
-    .execute()
-    .then((result) => {
-      var urls = [];
-      result.resources.map((item, index) => {
-        urls.push(
-          cloudinary.image(item.filename + "." + item.format, { data })
-        );
-        console.log(urls);
-      });
-      console.log(JSON.stringify(urls, null, 2));
-      return res.json(urls);
-    });
-  //   res.end("Returned all images");
-});
-
-// Residential Images
-router.post("/images/residential", (req, res) => {
+function cloudinarySearch(req, res, expression, max = null) {
   var data = req.body;
   console.log(req.body);
   cloudinary.v2.search
-    .expression("resource_type:image AND tags=residential")
+    .expression(expression)
+    .max_results(max === null ? 500 : max)
     .execute()
     .then((result) => {
       var urls = [];
-      if (data !== undefined) {
+      if (req.body) {
         result.resources.map((item, index) => {
           urls.push(
             cloudinary.image(item.filename + "." + item.format, {
-              transformation: [...data],
+              transformation: [{ ...data }],
             })
           );
           console.log(urls);
@@ -80,36 +57,33 @@ router.post("/images/residential", (req, res) => {
   // fetch(METADATA_URL)
   //   .then(res => res.json())
   //   .then(json => console.log(json));
-  //   res.end("Returned residential images");
+}
+
+//-------------------------------------
+// GET
+
+// All Images
+router.post("/images", (req, res) => {
+  cloudinarySearch(req, res, "resource_type:image");
+});
+
+// Residential Images
+router.post("/images/residential", (req, res) => {
+  cloudinarySearch(req, res, "resource_type:image AND tags=residential");
 });
 
 // Commercial Images
 router.post("/images/commercial", (req, res) => {
-  var data = req.body;
-  cloudinary.v2.search
-    .expression("resource_type:image AND tags=commercial")
-    .execute()
-    .then((result) => {
-      var urls = [];
-      if (!req.body) {
-        result.resources.map((item, index) => {
-          urls.push(
-            cloudinary.image(item.filename + "." + item.format, {
-              transformation: [...data],
-            })
-          );
-          console.log(urls);
-        });
-      } else {
-        result.resources.map((item, index) => {
-          urls.push(cloudinary.image(item.filename + "." + item.format));
-          console.log(urls);
-        });
-      }
-      console.log(JSON.stringify(urls, null, 2));
-      res.json(urls);
-    });
-  res.end("Returned commercial images");
+  cloudinarySearch(req, res, "resource_type:image AND tags=commercial");
+});
+
+router.post("/images/header", (req, res) => {
+  cloudinarySearch(req, res, "resource_type:image AND tags=header", 1);
+});
+
+router.post("/images/search", (req, res) => {
+  var searchExpression = req.body.expression;
+  cloudinarySearch(req, res, searchExpression, 1);
 });
 
 const multiUpload = upload.array("images");
