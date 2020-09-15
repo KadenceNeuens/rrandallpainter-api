@@ -30,14 +30,14 @@ function cloudinarySearch(req, res, expression, max=null)
         if (req.body)
         {
             result.resources.map((item, index) => {
-                urls.push(cloudinary.image(item.filename+'.'+item.format, {transformation: [{...data}]}))
+                urls.push(cloudinary.url(item.filename+'.'+item.format, {transformation: [{...data}]}))
                 console.log(urls)
             })
         }
         else
         {
             result.resources.map((item, index) => {
-                urls.push(cloudinary.image(item.filename+'.'+item.format))
+                urls.push(cloudinary.url(item.filename+'.'+item.format))
                 console.log(urls)
             })
         }
