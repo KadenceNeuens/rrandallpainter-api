@@ -31,6 +31,7 @@ function cloudinarySearch(req, res, expression, max = null) {
   cloudinary.v2.search
     .expression(expression)
     .max_results(max === null ? 500 : max)
+
     .execute()
     .then((result) => {
       var urls = [];
@@ -39,6 +40,7 @@ function cloudinarySearch(req, res, expression, max = null) {
           urls.push(
             cloudinary.url(item.filename + "." + item.format, {
               transformation: [{ ...data }],
+
             })
           );
           console.log(urls);
