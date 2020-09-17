@@ -37,7 +37,7 @@ function cloudinarySearch(req, res, expression, max = null) {
       if (req.body) {
         result.resources.map((item, index) => {
           urls.push(
-            cloudinary.image(item.filename + "." + item.format, {
+            cloudinary.url(item.filename + "." + item.format, {
               transformation: [{ ...data }],
             })
           );
@@ -45,7 +45,7 @@ function cloudinarySearch(req, res, expression, max = null) {
         });
       } else {
         result.resources.map((item, index) => {
-          urls.push(cloudinary.image(item.filename + "." + item.format));
+          urls.push(cloudinary.url(item.filename + "." + item.format));
           console.log(urls);
         });
       }
@@ -91,7 +91,7 @@ const multiUpload = upload.array("images");
 const multiUploads = (req, res, next) => {
   multiUpload(req, res, (error) => {
     if (error) {
-      return res.sendApiError({ title: "Upload Error", detail: error.message });
+      return res.status(500).json({ message: "error" });
     }
     next();
   });
@@ -100,9 +100,12 @@ const multiUploads = (req, res, next) => {
 router.post("/api/upload", multiUploads, (req, res) => {
   try {
     if (!req.files) throw new Error("Image upload failed!");
-    req.files.map((item, index) => {
-      cloudinary.v2.uploader.upload(item[index]);
-      console.log("Uploaded:" + item[index]);
+    console.log(req.files);
+    req.files.map((item) => {
+      var URI =
+        "data:" + item.mimetype + ";base64," + item.buffer.toString("base64");
+      cloudinary.v2.uploader.upload(URI);
+      console.log("Uploaded:" + item.originalname);
     });
     res.status(200).json({ message: "Success!" });
   } catch (error) {
