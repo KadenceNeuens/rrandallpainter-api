@@ -70,8 +70,22 @@ function check(name, pass) {
   return valid;
 }
 
+// /////////////////////////////////////////////////
+// // REQUIRE ADMIN PRIV ANYWHERE FURTHER
+
+// app.use("/", (req, res, next) => {
+//   if (req.session.type === "admin") {
+//       res.end("Welcome back, Big Chungus!");
+//       next();
+//   }
+//   else
+//   {
+//       res.status(401).json({message: "unauthorized!"})
+//   }
+// });
+
 //-------------------------------------
-//  GET
+//  Cloudinary Routes
 app.use("/", cloud);
 
 app.listen(port, () => {

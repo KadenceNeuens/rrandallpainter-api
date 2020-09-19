@@ -127,20 +127,6 @@ router.post("/images/search", (req, res) => {
     cloudinarySearch(req, res, searchExpression) 
 })
 
-/////////////////////////////////////////////////
-// REQUIRE ADMIN PRIV ANYWHERE FURTHER
-
-app.use("/", (req, res, next) => {
-    if (req.session.type === "admin") {
-        res.end("Welcome back, Big Chungus!");
-        next();
-    }
-    else
-    {
-        res.status(401).json({message: "unauthorized!"})
-    }
-});
-
 // Multer multi-file upload set up
 const multiUpload = upload.array("images");
 const multiUploads = (req, res, next) => 
