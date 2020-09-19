@@ -39,15 +39,6 @@ if (app.get("env") === "production") {
 app.use(session(sess));
 
 //-------------------------------------
-// On all req
-app.use("/", (req, res, next) => {
-  if (req.session.type === "admin") {
-    res.end("Welcome back, Big Chungus!");
-  }
-  next();
-});
-
-//-------------------------------------
 // POST - Login
 app.use("/login", (req, res, next) => {
   if (req.session.type === "admin") {
@@ -82,20 +73,6 @@ function check(name, pass) {
 //-------------------------------------
 //  GET
 app.use("/", cloud);
-
-//-------------------------------------
-// POST
-app.post("/images", (req, res) => {
-  res.send("");
-});
-
-app.put("/images", (req, res) => {
-  res.send("");
-});
-
-app.delete("/images", (req, res) => {
-  res.send("");
-});
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
