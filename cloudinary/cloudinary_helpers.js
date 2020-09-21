@@ -34,38 +34,43 @@ const cloudinary = require("../cloudinary/cloudinary")
 
 // Cloudinary Search helper
 function cloudinarySearch(req, res, expression, max = null) {
-    // Grab transform data from body
-    var data = req.body;
-    // Make search on Cloudinary cdn with provided expression
-    cloudinary.v2.search
-      .expression(expression)
-      .max_results(max === null ? 500 : max)
-      .execute()
-      .then((result) => {
-        // Prepare urls array to store returned urls
-        var urls = [];
-        // If any transforms are included...
-        if (data) {
-            // Map resources (the array of image results that cloudinary returns)
-            result.resources.map((item, index) => {
-            // Add each generated url with transforms to urls[]
-            urls.push(
-                cloudinary.url(item.filename + "." + item.format, {
-                // Spread transformations from json data in body
-                transformation: [{ ...data }],
-  
-              })
-            );
-          });
-        } else {
-            // If no transforms are supplied, do the above, minus transforms
-            result.resources.map((item, index) => {
-            urls.push(cloudinary.url(item.filename + "." + item.format));
-          });
-        }
-        console.log(JSON.stringify(urls, null, 2));
-        res.json(urls);
+  // Grab transform data from body
+  var transforms = req.body.transformation;
+
+  // Make search on Cloudinary cdn with provided expression
+  cloudinary.v2.search
+  .expression(expression)
+  .max_results(max === null ? 500 : max)
+  .execute()
+  .then((result) => {
+
+    // Prepare urls array to store returned urls
+    var urls = [];
+
+    // If any transforms are included...
+    if (transforms) {
+
+      // Map resources (the array of image results that cloudinary returns)
+      result.resources.map((item) => {
+        // Add each generated url with transforms to urls[]
+        urls.push(
+          cloudinary.url(
+            item.filename + "." + item.format, 
+            // Spread transformations from json data in body
+            {transformation: [{ ...transforms }]}
+          )
+        );
       });
+
+  } else {
+    // If no transforms are supplied, do the above, minus transforms
+    result.resources.map((item) => {
+      urls.push(cloudinary.url(item.filename + "." + item.format));
+    });
+  }
+  console.log(JSON.stringify(urls, null, 2));
+  res.json(urls);
+});
   
     // Fetching metadata for position (not working yet, may need premium)
     // fetch(METADATA_URL)
@@ -75,21 +80,24 @@ function cloudinarySearch(req, res, expression, max = null) {
 
 // Cloudinary public_id Search helper
 function cloudinarySearchId(req, res, expression, max = null) {
-    // Make search on Cloudinary cdn with provided expression
-    cloudinary.v2.search
-    .expression(expression)
-    .max_results(max === null ? 500 : max)
-    .execute()
-    .then((result) => {
-        // Prepare public_ids array to store returned public_ids
-        var public_ids = []
-        // Map resources (the array of image results that cloudinary returns)
-        result.resources.map((item) => {
-            public_ids.push(item.public_id)
-        })
-        console.log(JSON.stringify(urls, null, 2));
-        res.json(public_ids);
-    })
+  // Make search on Cloudinary cdn with provided expression
+  cloudinary.v2.search
+  .expression(expression)
+  .max_results(max === null ? 500 : max)
+  .execute()
+  .then((result) => {
+
+      // Prepare public_ids array to store returned public_ids
+      var public_ids = []
+
+      // Map resources (the array of image results that cloudinary returns)
+      result.resources.map((item) => {
+          public_ids.push(item.public_id)
+      })
+
+      console.log(JSON.stringify(public_ids, null, 2));
+      res.json(public_ids);
+  })
 }
 
 module.exports = {

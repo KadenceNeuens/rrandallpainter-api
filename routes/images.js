@@ -8,55 +8,23 @@ const { cloudinarySearch, cloudinarySearchId } = require("../cloudinary/cloudina
 //------------------------------------------------------------
 // POST - POST response to image queries. Spreads any body data as array of transformations
 
-// All Images
-router.post("/", (req, res) => {
-    cloudinarySearch(req, res, "resource_type:image") 
-})
-
-// Residential Images
-router.post("/residential", (req, res) => {
-    cloudinarySearch(req, res, "resource_type:image AND tags=residential") 
-})
-
-// Commercial Images
-router.post("/commercial", (req, res) => {
-    cloudinarySearch(req, res, "resource_type:image AND tags=commercial") 
-})
-
-// Header Image
-router.post("/header", (req, res) => {
-    cloudinarySearch(req, res, "resource_type:image AND tags=header", 1) 
-})
-
 // Image Search
 // -
-// (required) Accepts a search expression (see Cloudinary Search API for details)
+// (optional) Accepts a search expression (see Cloudinary Search API for details)
 router.post("/search", (req, res) => {
     var searchExpression = req.body.expression;
-    cloudinarySearch(req, res, searchExpression) 
-})
+    cloudinarySearch(req, res, searchExpression);
+});
 
 //------------------------------------------------------------
 // GET - GET response returns image public id's for processing
 
 // All Images
+// -
+// (optional) Accepts a search expression (see Cloudinary Search API for details)
 router.get('/', (req, res) => {
-    cloudinarySearchId(req, res, "resource_type:image")
-})
+    var searchExpression = req.body.expression;
+    cloudinarySearchId(req, res, searchExpression);
+});
 
-// Residential Images
-router.get('/residential', (req, res) => {
-    cloudinarySearchId(req, res, "resource_type:image AND tags=residential")
-})
-
-// Commercial Images
-router.get('/commercial', (req, res) => {
-    cloudinarySearchId(req, res, "resource_type:image AND tags=commercial")
-})
-
-// Header Image
-router.get('/header', (req, res) => {
-    cloudinarySearchId(req, res, "resource_type:image AND tags=header", 1)
-})
-
-module.exports = router
+module.exports = router;
