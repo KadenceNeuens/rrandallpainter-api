@@ -11,9 +11,11 @@ const { cloudinarySearch, cloudinarySearchId } = require("../cloudinary/cloudina
 // Image Search
 // -
 // (optional) Accepts a search expression (see Cloudinary Search API for details)
-router.post("/search", (req, res) => {
+router.post("/", (req, res) => {
     var searchExpression = req.body.expression;
-    cloudinarySearch(req, res, searchExpression);
+    var max = req.body.max;
+    if (max)    { cloudinarySearch(req, res, searchExpression, max); }
+    else        { cloudinarySearch(req, res, searchExpression) }
 });
 
 //------------------------------------------------------------
@@ -24,7 +26,9 @@ router.post("/search", (req, res) => {
 // (optional) Accepts a search expression (see Cloudinary Search API for details)
 router.get('/', (req, res) => {
     var searchExpression = req.body.expression;
-    cloudinarySearchId(req, res, searchExpression);
+    var max = req.body.max;
+    if (max)    { cloudinarySearch(req, res, searchExpression, max); }
+    else        { cloudinarySearch(req, res, searchExpression) }
 });
 
 module.exports = router;
