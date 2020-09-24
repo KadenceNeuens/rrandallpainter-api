@@ -11,7 +11,7 @@ const sess = {
   cookie: {},
   store: new MongoStore({
     url: process.env.MONGO_URL,
-    ttl: 120,
+    ttl: 1200,
   }),
 };
 

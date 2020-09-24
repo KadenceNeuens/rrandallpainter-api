@@ -62,15 +62,14 @@ function cloudinarySearch(req, res, expression, max = null) {
         );
       });
 
-  } else {
-    // If no transforms are supplied, do the above, minus transforms
-    result.resources.map((item) => {
-      urls.push(cloudinary.url(item.filename + "." + item.format));
-    });
-  }
-  console.log(JSON.stringify(urls, null, 2));
-  res.json(urls);
-});
+    } else {
+      // If no transforms are supplied, do the above, minus transforms
+      result.resources.map((item) => {
+        urls.push(cloudinary.url(item.filename + "." + item.format));
+      });
+    }
+    res.json(urls);
+  });
   
     // Fetching metadata for position (not working yet, may need premium)
     // fetch(METADATA_URL)
@@ -88,14 +87,15 @@ function cloudinarySearchId(req, res, expression, max = null) {
   .then((result) => {
 
       // Prepare public_ids array to store returned public_ids
-      var public_ids = []
+      var public_ids = [];
 
       // Map resources (the array of image results that cloudinary returns)
       result.resources.map((item) => {
           public_ids.push(item.public_id)
-      })
+      });
 
-      console.log(JSON.stringify(public_ids, null, 2));
+      console.log(result)
+
       res.json(public_ids);
   })
 }

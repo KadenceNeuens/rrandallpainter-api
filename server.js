@@ -9,9 +9,8 @@ const cors = require("cors");
 app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 
 require("dotenv").config();
-const { Console } = require("console");
 
-const { auth, session, sess } = require("./auth/auth");
+const { auth, session, sess, MongoStore } = require("./auth/auth");
 const { check, requireAdmin } = require("./auth/helpers");
 
 //Serve secure cookies in production
@@ -25,7 +24,8 @@ app.use(session(sess));
 // POST - Login
 app.use("/login", (req, res, next) => {
   if (req.session.type === "admin") {
-    res.end("Welcome back, Big Chungus!");
+    console.log(sess)
+    res.send("Welcome back, Big Chungus!")
   } else {
     const credentials = auth(req);
     if (!credentials || !check(credentials.name, credentials.pass)) {
@@ -35,7 +35,7 @@ app.use("/login", (req, res, next) => {
       res.json({ auth: false });
     } else {
       req.session.type = "admin";
-      console.log(req.session.type);
+      console.log(req.session);
       console.log("Access granted!");
       res.json({ auth: true });
     }

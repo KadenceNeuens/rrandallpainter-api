@@ -13,10 +13,12 @@ module.exports = {
     // Make sure user is an admin before moving to next callback
     requireAdmin : (req, res, next) => {
         if (req.session.type === "admin") {
+            console.log("Admin authorized");
             next();
         }
         else
         {
+            console.log(req.session.type)
             res.status(401).json({message: "unauthorized!"})
         }
     }

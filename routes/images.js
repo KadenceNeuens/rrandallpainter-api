@@ -27,8 +27,8 @@ router.post("/", (req, res) => {
 router.get('/', (req, res) => {
     var searchExpression = req.body.expression;
     var max = req.body.max;
-    if (max)    { cloudinarySearch(req, res, searchExpression, max); }
-    else        { cloudinarySearch(req, res, searchExpression) }
+    if (max)    { cloudinarySearchId(req, res, searchExpression, max); }
+    else        { cloudinarySearchId(req, res, searchExpression) }
 });
 
 module.exports = router;
