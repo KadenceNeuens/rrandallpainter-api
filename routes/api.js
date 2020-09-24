@@ -12,15 +12,12 @@ const { multiUploads } = require("../multer/multiUploads");
 // -
 // Returns a json array of tags for given public_id(s)
 router.post("/tags", (req, res) => {
-    if (!req.body.ids) throw new Error("You must include an array of public_ids!")
+    // if (!req.body.ids) throw new Error("You must include an array of public_ids!")
     var ids = req.body.ids;
     var tags = [];
-    ids = Array.from(ids);
-    cloudinary.v2.api.resources(
-        {
-            public_ids: ids,
-            tags: true
-        },
+    cloudinary.v2.api.resources_by_id(
+        ids,
+        {tags: true},
         (error, result) => {
             console.log(result);
             result.resources.map((item) => {
