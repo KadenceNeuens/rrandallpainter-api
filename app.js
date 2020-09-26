@@ -1,7 +1,8 @@
+const serverless = require('serverless-http');
 const express = require("express");
 const router = express.Router();
 const app = express();
-const port = 3080;
+// const port = 3080;
 const bodyParser = require("body-parser");
 app.use(bodyParser.json()); // for parsing application/json
 
@@ -49,6 +50,9 @@ router.use("/api", requireAdmin, require("./routes/api"));
 
 app.use("/", router);
 
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
-});
+
+module.exports.handler = serverless(app);
+
+// app.listen(port, () => {
+//   console.log(`Example app listening at http://localhost:${port}`);
+// });
