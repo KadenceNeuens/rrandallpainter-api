@@ -14,8 +14,12 @@ functions:
       - http: 
           path: /
           method: ANY
-          cors: true
+          cors:
+            origin: 'http://localhost:3000'
+            allowCredentials: true
       - http: 
           path: /{proxy+}
           method: ANY
-          cors: true
+          cors:
+            origin: 'http://localhost:3000'
+            allowCredentials: true

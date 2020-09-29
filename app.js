@@ -14,16 +14,22 @@ require("dotenv").config();
 const { auth, session, sess, MongoStore } = require("./auth/auth");
 const { check, requireAdmin } = require("./auth/helpers");
 
-//Serve secure cookies in production
-if (app.get("env") === "production") {
-  sess.cookie.secure = true;
-}
+// //Serve secure cookies in production
+// if (app.get("env") === "production") {
+//   sess.cookie.secure = true;
+// }
+
 // Set session
 app.use(session(sess));
 
 //-------------------------------------
 // POST - Login
-app.use("/login", (req, res, next) => {
+app.use("/login", (req, res) => {
+  console.log(sess.cookie.secure);
+  console.log(session(sess));
+  console.log(app.get("env"));
+  console.log(res);
+  console.log("Set-Cookie Header: " + res.getHeader('set-cookie'));
   if (req.session.type === "admin") {
     console.log(sess)
     res.send("Welcome back, Big Chungus!")
@@ -38,10 +44,10 @@ app.use("/login", (req, res, next) => {
       req.session.type = "admin";
       console.log(req.session);
       console.log("Access granted!");
+      console.log(res);
       res.json({ auth: true });
     }
   }
-  next();
 });
 
 // Routes

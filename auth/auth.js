@@ -8,7 +8,7 @@ const sess = {
   secret: "big chungus",
   resave: false,
   saveUninitialized: true,
-  cookie: {},
+  cookie: { sameSite: 'none', secure: true },
   store: new MongoStore({
     url: process.env.MONGO_URL,
     ttl: 1200,

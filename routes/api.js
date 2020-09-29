@@ -17,7 +17,7 @@ router.post("/tags", (req, res) => {
     var ids = req.body.ids;
     // init tags array to hold response for later
     var tags = [];
-    cloudinary.v2.api.resources_by_id(
+    cloudinary.v2.api.resources_by_ids(
         ids,
         {tags: true},
         (error, result) => {
