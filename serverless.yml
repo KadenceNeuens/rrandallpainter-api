@@ -1,6 +1,7 @@
 service: rrandallpainter-api
 plugins:
   - serverless-dotenv-plugin
+  - serverless-apigw-binary
 provider:
   name: aws
   runtime: nodejs12.x
@@ -23,3 +24,12 @@ functions:
           cors:
             origin: 'http://localhost:3000'
             allowCredentials: true
+custom:
+  apigwBinary:
+    types:           #list of mime-types
+      - 'multipart/form-data'
+      - 'image/jpeg'
+      - 'image/png'
+      - 'image/gif'
+      - 'image/bmp'
+      - 'text/html'

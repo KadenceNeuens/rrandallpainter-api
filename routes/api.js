@@ -96,10 +96,15 @@ router.post("/upload", multiUploads, (req, res) =>
             // Craft data URI from file upload
             var URI = "data:" + item.mimetype + ";base64," + item.buffer.toString("base64");
             // Upload image with (if any) provided tags
-            cloudinary.v2.uploader.upload(URI, {tags: tags[index]} );
+            cloudinary.v2.uploader.upload(URI, {tags: tags[index]},
+                (error, result) => {
+                    console.log(error, result);
+                    if (error) res.status(422).json({ message: error })
+                }
+                );
             // Log uploaded images
             console.log("Uploaded:" + item.originalname);
-
+            console.log(URI);
         });
         res.status(200).json({ message: "Success!" });
     } catch (error) {
