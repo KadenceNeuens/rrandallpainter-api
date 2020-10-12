@@ -3,6 +3,7 @@
 //
 
 const router = require("express").Router();
+const ImageModel = require("../mongodb/image");
 const cloudinary = require("../cloudinary/cloudinary");
 const { multiUploads } = require("../multer/multiUploads");
 
@@ -49,6 +50,12 @@ router.put("/tags/update", (req,res) => {
         cloudinary.v2.uploader.remove_all_tags(
             ids,
             (error,result) => {
+
+                // Update all Mongo references
+                ImageModel.updateMany( { id: { $in: [...ids] } }, { $set: { tags : [] } })
+                .then(doc => { console.log(doc) })
+                .catch(err => { console.error(err) })
+
                 // Map each tag to a add_tag() call for all resources
                 tags.map((item) => {
 
@@ -60,7 +67,12 @@ router.put("/tags/update", (req,res) => {
                         }
                     )
                     
-                })
+                    // Update all Mongo references
+                    ImageModel.updateMany( { id: { $in: [...ids] } }, { $push: { tags : item } })
+                    .then(doc => { console.log(doc) })
+                    .catch(err => { console.error(err) })
+
+                    });
                 res.status(200).json({ message: "Successfully updated tags"});
             }
         )
@@ -72,6 +84,12 @@ router.put("/tags/update", (req,res) => {
             (error, result) =>
             {
                 console.log("Removed all tags from: " + result.public_ids, !error ? "" : error);
+
+                // Update all Mongo references
+                ImageModel.updateMany( { id: { $in: [...ids] } }, { $set: { tags : [] } })
+                .then(doc => { console.log(doc) })
+                .catch(err => { console.error(err) })
+                    
                 res.status(200).json({ essage: "Successfully removed all tags"});
             })
     }
@@ -89,24 +107,47 @@ router.post("/upload", multiUploads, (req, res) =>
         if (!req.files) throw new Error("Image upload failed!");
         // Gather tags
         if (!req.body.tags) throw new Error("At least one image tag per image is required!")
-        var tags = req.body.tags;
+        var tags = [req.body.tags];
+        console.log("TAGS",tags);
         // Map each uploaded file to cloudinary upload
-        req.files.map((item, index) => {
+        Promise.all(req.files.map((item, index) => {
 
             // Craft data URI from file upload
             var URI = "data:" + item.mimetype + ";base64," + item.buffer.toString("base64");
+
+            // Store data for ImageModel object
+            let newItemData = { id: "", tags: []};
+
             // Upload image with (if any) provided tags
             cloudinary.v2.uploader.upload(URI, {tags: tags[index]},
                 (error, result) => {
                     console.log(error, result);
-                    if (error) res.status(422).json({ message: error })
+                    if(error) res.status(422).json({ message: error })
+                    
+                    // Update ImageModel Object
+                    newItemData.id = result.public_id.valueOf(),
+                    newItemData.tags = tags[index].split(',')
+
+                    console.log(newItemData.tags);
+                    console.log(newItemData);
+
+                    var newItem = new ImageModel(newItemData);
+
+                    // Save new ImageModel data in Mongo to grab tags from later
+                    newItem.save()
+                    .then(doc => { console.log(doc) })
+                    .catch(err => { console.error(err) });
+                    res.status(200).json({ message: "Success!" }); 
                 }
                 );
             // Log uploaded images
             console.log("Uploaded:" + item.originalname);
+
             console.log(URI);
-        });
-        res.status(200).json({ message: "Success!" });
+        }))
+        .then(() => {
+            
+        })
     } catch (error) {
         console.log(error)
         res.status(422).json({ message: error.message });
@@ -116,16 +157,22 @@ router.post("/upload", multiUploads, (req, res) =>
 // CLOUDINARY IMAGE DELETE
 // -
 // (required) Accepts array of filenames (without file extension!) to delete under "files" in body
-router.delete("/delete", (req, res) => {
+router.post("/delete", (req, res) => {
     try {
         if (!req.body) throw new Error("Failed, no image public id given!");
         // get names of files to be deleted
-        var data = req.body.files;
+        var data = req.body.ids;
         // Map each file scheduled to be deleted
         data.map((item) => {
-            cloudinary.v2.uploader.destroy(item);
+            cloudinary.v2.uploader.destroy(item, (error, result) => {
+                ImageModel.deleteMany({ id: { $in: [...ids] } })
+                .then(doc => { console.log(doc) })
+                .catch(err => { console.error(err) })
+                res.status(200).json({ message: "Successfully deleted: " + {data} });
+            });
+
         });
-        res.status(200).json({ message: "Successfully deleted: " + {...data} });
+        
     } catch(error) {
         res.status(422).json({ message: error.message });
     }

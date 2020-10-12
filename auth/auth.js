@@ -2,6 +2,7 @@
 const auth = require("basic-auth");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
+const mongoose = require("mongoose");
 
 // Session settings
 const sess = {
@@ -10,10 +11,10 @@ const sess = {
   saveUninitialized: true,
   cookie: { sameSite: 'none', secure: true },
   store: new MongoStore({
-    url: process.env.MONGO_URL,
-    ttl: 1200,
-  }),
-};
+    mongooseConnection: mongoose.connection,
+    ttl: 3600
+  })
+}
 
 module.exports = {
     auth, session, sess, MongoStore

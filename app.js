@@ -3,24 +3,29 @@ const express = require("express");
 const router = express.Router();
 const app = express();
 // const port = 3080;
+
 const bodyParser = require("body-parser");
-app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.json());
 
 const cors = require("cors");
 app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 
 require("dotenv").config();
 
-const { auth, session, sess, MongoStore } = require("./auth/auth");
+const { auth, session, sess } = require("./auth/auth");
 const { check, requireAdmin } = require("./auth/helpers");
+
+const mongoose = require('mongoose')
 
 // //Serve secure cookies in production
 // if (app.get("env") === "production") {
 //   sess.cookie.secure = true;
 // }
 
+mongoose.connect(process.env.MONGO_URL, {useNewUrlParser: true, useUnifiedTopology: true});
+
 // Set session
-app.use(session(sess));
+app.use(session(sess)); 
 
 //-------------------------------------
 // POST - Login
@@ -55,7 +60,6 @@ router.use("/images", require("./routes/images"));
 router.use("/api", requireAdmin, require("./routes/api"));
 
 app.use("/", router);
-
 
 module.exports.handler = serverless(app);
 

@@ -3,7 +3,9 @@
 //
 
 const router = require("express").Router();
+const ImageModel = require("../mongodb/image");
 const { cloudinarySearch, cloudinarySearchId } = require("../cloudinary/cloudinary_helpers");
+const { json } = require("express");
 
 //------------------------------------------------------------
 // POST - POST response to image queries. Spreads any body data as array of transformations
@@ -30,5 +32,27 @@ router.get('/', (req, res) => {
     if (max)    { cloudinarySearchId(req, res, searchExpression, max); }
     else        { cloudinarySearchId(req, res, searchExpression) }
 });
+
+// All Image Tags
+// -
+// (todo: add tag search by expression)
+router.get('/tags', (req, res) => {
+    ImageModel.find({})
+    .sort({date: 'desc'})
+    .then(doc => {
+        console.log(doc)
+        let tags = [];
+        Promise.all(doc.map((item) => {
+            tags.push(item.tags);
+        }))
+        .then(()=> {res.json(tags)})
+        .catch(e => console.error(e))
+    })
+    .catch(err => {
+    console.error(err)
+    res.status(400).json({ message: err });
+    })
+})
+
 
 module.exports = router;
